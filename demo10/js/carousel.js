@@ -15,12 +15,14 @@ var mouseXOnMouseDown = 0;
 var windowHalfX = window.innerWidth / 2;
 var windowHalfY = window.innerHeight / 2;
 
-var radious = 1600, theta = 45, onMouseDownTheta = 45, phi = 60, onMouseDownPhi = 60, isShiftDown = false;
+var radious = 1600, theta = 45, onMouseDownTheta = 45, phi = 60;
+var onMouseDownPhi = 60, isShiftDown = false;
 
 var particle;
 var particles = [];
 
 init();
+leapMain();
 animate();
 
 //////////////////////////////////////////////////////////////////////
@@ -212,12 +214,14 @@ function onDocumentMouseDown( event ) {
     document.addEventListener( 'mouseout', onDocumentMouseOut, false );
     mouseXOnMouseDown = event.clientX - windowHalfX;
     targetRotationOnMouseDown = targetRotation;
+    console.log("targetRotationOnMouseDown: " + targetRotationOnMouseDown);
 }
 
 function onDocumentMouseMove( event ) {
     mouseX = event.clientX - windowHalfX;
     mouseY = event.clientY - windowHalfY;
     targetRotation = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.02;
+    console.log("targetRotation: " + targetRotation);
     camera.position.x =  Math.sin( theta * Math.PI / 360 ) * Math.cos( phi * Math.PI / 360 );
     render();
 }
@@ -264,5 +268,23 @@ function render() {
 }
 
 function leapMain() {
-    var controller = new Leap.Controller();
+    var controller = new Leap.Controller({enableGestures: true});
+    controller.on('frame', function(frameInstance) {
+        if (frameInstance.gestures.length > 0) {
+            for (var i = 0; i < frameInstance.gestures.length; i++) {
+                if (frameInstance.gestures[i].type == "swipe") {
+                    var x_direction = frameInstance.gestures[i].direction[0];
+                    console.log("Swipe[" + i + "]: " + frameInstance.gestures[i]);
+                    if (x_direction > 0) { // to right
+                        targetRotation += 0.05 * frameInstance.gestures[i].speed / 1000.0;
+                    } else { // to left
+                        targetRotation -= 0.05 * frameInstance.gestures[i].speed / 1000.0;
+                    }
+                    camera.position.x =  Math.sin( theta * Math.PI / 360 ) * Math.cos( phi * Math.PI / 360 );
+                    render();
+                }
+            }
+        }
+    });
+    controller.connect();
 }
