@@ -262,3 +262,7 @@ function render() {
     parent.rotation.y += ( targetRotation - parent.rotation.y ) * 0.05;
     renderer.render( scene, camera );
 }
+
+function leapMain() {
+    var controller = new Leap.Controller();
+}
