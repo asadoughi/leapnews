@@ -203,21 +203,21 @@ function render() {
 }
 
 function leapMain() {
-    var controller = new Leap.Controller({enableGestures: true});
+    var controller = new Leap.Controller();
+    var threshold = 30;
     controller.on('frame', function(frameInstance) {
-        if (frameInstance.gestures.length > 0) {
-            for (var i = 0; i < frameInstance.gestures.length; i++) {
-                if (frameInstance.gestures[i].type == "swipe") {
-                    var x_direction = frameInstance.gestures[i].direction[0];
-                    console.log("Swipe[" + i + "]: " + frameInstance.gestures[i]);
-                    if (x_direction > 0) { // to right
-                        targetRotation += 0.05 * frameInstance.gestures[i].speed / 1000.0;
-                    } else { // to left
-                        targetRotation -= 0.05 * frameInstance.gestures[i].speed / 1000.0;
-                    }
-                    camera.position.x =  Math.sin( theta * Math.PI / 360 ) * Math.cos( phi * Math.PI / 360 );
-                    render();
+        if (frameInstance.hands.length > 0) {
+            for (var i = 0; i < frameInstance.hands.length; i++) {
+                var x_direction = frameInstance.hands[i].palmPosition[0];
+                // console.log("Hand[" + i + "]" + frameInstance.hands[i].palmPosition[0]);
+                var percentage = Math.abs(x_direction)/150;
+                if (x_direction > threshold) { // to right
+                    targetRotation += 0.02 * percentage;
+                } else if (x_direction < -threshold) { // to left
+                    targetRotation -= 0.02 * percentage;
                 }
+                camera.position.x =  Math.sin( theta * Math.PI / 360 ) * Math.cos( phi * Math.PI / 360 );
+                render();
             }
         }
     });
