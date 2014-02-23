@@ -58,18 +58,21 @@ function init() {
     ////////////////////////////////////////////////////////////////////////
     var materials = [];
     var arImgRotator = {
-        "0": "0e1631c4c9fc11e1b10e123138105d6b_6.jpg",
-        "1": "21ed7380c9fa11e18cf91231380fd29b_6.jpg",
-        "2": "2c1d77c4cfcc11e1a15422000a1e8687_6.jpg",
-        "3": "30d67d3cc9fb11e1be6a12313820455d_6.jpg",
-        "4": "3b196304cb8b11e1bf341231380f8a12_6.jpg",
-        "5": "3b2c7da4ca0011e1a94522000a1e8aaf_6.jpg",
-        "6": "7370af62c9fd11e1b2fe1231380205bf_6.jpg",
-        "7": "859ef4bac9fc11e19894123138140d8c_6.jpg",
-        "8": "87518a80cfcd11e1a47b22000a1cf766_6.jpg",
-        "9": "90cb31e4c9fe11e1bef722000a1e8bb5_6.jpg",
-        "10": "930baf9cc9f911e19e4a12313813ffc0_6.jpg",
-        "11": "9cfa1a94c9fd11e1a38422000a1c8933_6.jpg"
+        "0": "0342f0984c40b47f86b077ed304b.jpg",
+        "1": "04432755468e82b71776d68c38ce.jpg",
+        "2": "1643c2644bebb198f4469725c095.jpg",
+        "3": "17e2599d4a38a5a39345112fe906.jpg",
+        "4": "1ce8af5e40bdaffce28d41085e0f.jpg",
+        "5": "240b025d4fdb91cb486440b95008.jpg",
+        "6": "50ec75624b16be2b7396e397a105.jpg",
+        "7": "5a9ee59c48d6992a13ba8f380202.jpg",
+        "8": "6a39fe1a4b06850414edbec28f34.jpg",
+        "9": "912b446a4e94a2643895f73d80a3.jpg",
+        "10": "a5855dcb4a33a78cc8b49dfcdbd7.jpg",
+        "11": "dcb19d924a1eb644cc7b03637802.jpg",
+        "12": "dd1d81eb464a9e7e9eb102674cf0.jpg",
+        "13": "dec7ee9f473bb0423eebf38bd279.jpg",
+        "14": "eb74f23941f2b39acd8b9322cee9.jpg"
     };
 
     var camSize = 100;
@@ -80,7 +83,7 @@ function init() {
 
     var mpi = Math.PI / 180;
     var startRadians = startAngle + mpi;
-    var totalSpheres = 12;
+    var totalSpheres = 15;
     var incrementAngle = 360 / totalSpheres;
     var incrementRadians = incrementAngle * mpi;
 
