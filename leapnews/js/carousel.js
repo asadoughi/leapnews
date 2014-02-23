@@ -132,8 +132,17 @@ function leapMain() {
                         if (frameCount % 500 == 1)
                             console.log(parent[best_i].rotation.y + " -- " + j + " -- " + images[j].rotation.y + " -- " + images[j].name);
                     }
-                    if (frameCount % 500 == 1)
+                    if (frameCount % 500 == 1) {
                         console.log("bang! " + best_i + " " + best_j + " " + parent[best_i].children[best_j].name);
+                        $.fancybox.open([
+                            {
+                                href : parent[best_i].children[best_j].name,
+                                title : '--insert title--'
+                            }
+                        ], {
+                            padding : 0
+                        });
+                    }
                     frameCount += 1;
                 }
 
