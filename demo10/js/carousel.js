@@ -21,37 +21,38 @@ function init() {
     container = document.createElement('div');
     document.body.appendChild(container);
 
-    var info = document.createElement('div');
-    info.style.position = 'absolute';
-    info.style.top = '10px';
-    info.style.width = '100%';
-    info.style.color = '#ffffff';
-    info.style.textAlign = 'center';
-
-    info.innerHTML = 'Leap News Prototype';
-    container.appendChild(info);
+    // var info = document.createElement('div');
+    // info.style.position = 'absolute';
+    // info.style.top = '10px';
+    // info.style.width = '100%';
+    // info.style.color = '#ffffff';
+    // info.style.textAlign = 'center';
+    // info.innerHTML = 'Leap News Prototype';
+    // container.appendChild(info);
 
     camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 10,  2500);
     camera.movementSpeed = 100.0;
     camera.rollSpeed = 0.5;
-    camera.position.y = 60;
+    camera.position.y = 220;
     camera.position.z = 500;
 
     scene = new THREE.Scene();
-    parent = new THREE.Object3D();
-    parent.position.y = 60;
-    scene.add(parent);
+    parent = [new THREE.Object3D(), new THREE.Object3D(), new THREE.Object3D()];
+    parent[0].position.y = 320;
+    parent[1].position.y = 220;
+    parent[2].position.y = 120;
+    for (var i = 0; i < parent.length; i++) {
+        scene.add(parent[i]);
 
-    //////////////////////////////////////////////////////////////////////
-    // lights
-    //////////////////////////////////////////////////////////////////////
-    var light = new THREE.DirectionalLight(0xffffff);
-    light.position.set(10, 10, 11);
-    light.position.normalize();
-    parent.add(light);
+        // lights
+        var light = new THREE.DirectionalLight(0xffffff);
+        light.position.set(10, 10, 11);
+        light.position.normalize();
+        parent[i].add(light);
 
-    var pointLight = new THREE.PointLight(0xffffff, 0.9);
-    parent.add(pointLight);
+        var pointLight = new THREE.PointLight(0xffffff, 0.9);
+        parent[i].add(pointLight);
+    }
 
     ////////////////////////////////////////////////////////////////////////
     // Generate 3D Planes in Radius circle
@@ -102,7 +103,7 @@ function init() {
           planObj.position.z = zp;
           planObj.rotation.y = i*incrementAngle * (Math.PI/180.0); //MH - do this without degrees
           startRadians += incrementRadians;
-          parent.add(planObj);
+          parent[i%3].add(planObj);
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -193,25 +194,45 @@ function animate() {
 }
 
 function render() {
-    parent.rotation.y += ( targetRotation - parent.rotation.y ) * 0.05;
+    var min_distance = Math.abs(parent[0].position.y - camera.position.y);
+    var distance_i = 0;
+    for (var i = 1; i < parent.length; i++) {
+        var d = Math.abs(parent[i].position.y - camera.position.y);
+        if (d < min_distance) {
+            min_distance = d;
+            distance_i = i;
+        }
+    }
+    parent[distance_i].rotation.y += ( targetRotation - parent[distance_i].rotation.y ) * 0.05;
     renderer.render( scene, camera );
 }
 
 function leapMain() {
     var controller = new Leap.Controller();
-    var threshold = 30;
+    var x_threshold = 30, y_threshold = 100;
     controller.on('frame', function(frameInstance) {
         if (frameInstance.hands.length > 0) {
             for (var i = 0; i < frameInstance.hands.length; i++) {
                 var x_direction = frameInstance.hands[i].palmPosition[0];
-                // console.log("Hand[" + i + "]" + frameInstance.hands[i].palmPosition[0]);
+                // console.log("Hand[" + i + "]" + frameInstance.hands[i].palmVelocity[1]);
                 var percentage = Math.abs(x_direction)/150;
-                if (x_direction > threshold) { // to right
+                if (x_direction > x_threshold) { // to right
                     targetRotation += 0.02 * percentage;
-                } else if (x_direction < -threshold) { // to left
+                } else if (x_direction < -x_threshold) { // to left
                     targetRotation -= 0.02 * percentage;
                 }
                 camera.position.x =  Math.sin( theta * Math.PI / 360 ) * Math.cos( phi * Math.PI / 360 );
+
+                var y_direction = (frameInstance.hands[i].palmPosition[1]-140);
+                if (y_direction < y_threshold) {
+                    camera.position.y -= y_direction/150;
+                    camera.position.y = Math.max(120, camera.position.y);
+                    camera.position.y = Math.min(320, camera.position.y);
+                } else if (y_direction > y_threshold) {
+                    camera.position.y -= y_direction/150;
+                    camera.position.y = Math.max(120, camera.position.y);
+                    camera.position.y = Math.min(320, camera.position.y);
+                }
                 render();
             }
         }
