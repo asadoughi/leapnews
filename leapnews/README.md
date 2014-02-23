@@ -7,3 +7,6 @@ different news section.
 
 # Instructions
 Open index.html in chrome with --disable-web-security
+
+# Credits
+Based on maran-emil.de/experiments/demo10/, three.js, and LeapJS.
