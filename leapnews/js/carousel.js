@@ -69,6 +69,7 @@ function init() {
                 wireframe: false,
                 overdraw: true
             }));
+          planObj.name = 'img/' + arImgRotator[i];
           planObj.position.x = xp;
           planObj.position.z = zp;
           planObj.rotation.y = i * incrementAngle * mpi;
@@ -88,7 +89,7 @@ function animate() {
     render();
 }
 
-function render() {
+function visible_row() {
     var min_distance = Math.abs(parent[0].position.y - camera.position.y);
     var distance_i = 0;
     for (var i = 1; i < parent.length; i++) {
@@ -98,19 +99,42 @@ function render() {
             distance_i = i;
         }
     }
+    return distance_i;
+}
+
+function render() {
+    distance_i = visible_row();
     parent[distance_i].rotation.y += (targetRotation - parent[distance_i].rotation.y) * 0.05;
     renderer.render(scene, camera);
 }
 
 function leapMain() {
+    var frameCount = 0;
     var controller = new Leap.Controller();
     var x_threshold = 30, y_threshold = 100;
     controller.on('frame', function(frameInstance) {
         if (frameInstance.hands.length > 0) {
             for (var i = 0; i < frameInstance.hands.length; i++) {
                 if (frameInstance.hands[i].pointables.length == 1) {
+
                     // figure out which image i'm looking at
-                    console.log("bang!");
+                    var min_distance = Infinity;
+                    var best_i = visible_row(), best_j = 0;
+                    var images = parent[best_i].children;
+                    for (var j = 0; j < images.length; j++) {
+                        var d = Math.abs((2 * Math.PI - parent[best_i].rotation.y % (2 * Math.PI)) - images[j].rotation.y);
+                        if (parent[best_i].rotation.y < 0)
+                            d = Math.abs((Math.abs(parent[best_i].rotation.y) % (2 * Math.PI)) - images[j].rotation.y);
+                        if (d < min_distance) {
+                            min_distance = d;
+                            best_j = j;
+                        }
+                        if (frameCount % 500 == 1)
+                            console.log(parent[best_i].rotation.y + " -- " + j + " -- " + images[j].rotation.y + " -- " + images[j].name);
+                    }
+                    if (frameCount % 500 == 1)
+                        console.log("bang! " + best_i + " " + best_j + " " + parent[best_i].children[best_j].name);
+                    frameCount += 1;
                 }
 
                 // Looking for open hand preferably, not pointer index
@@ -125,7 +149,6 @@ function leapMain() {
                 } else if (x_direction < -x_threshold) {
                     targetRotation -= 0.02 * percentage;
                 }
-                camera.position.x =  Math.sin(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
 
                 // Y-axis - up/down
                 var y_direction = (frameInstance.hands[i].palmPosition[1]-140);
