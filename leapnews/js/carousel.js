@@ -69,12 +69,18 @@ function init() {
                 wireframe: false,
                 overdraw: true
             }));
-          planObj.name = 'img/' + arImgRotator[i];
-          planObj.position.x = xp;
-          planObj.position.z = zp;
-          planObj.rotation.y = i * incrementAngle * mpi;
-          startRadians += incrementRadians;
-          parent[i%3].add(planObj);
+        planObj.name = 'img/' + arImgRotator[i];
+        if (i == 10) {
+            planObj.title = "Netflix, Comcast reach peering agreement - GigaOm report";
+            planObj.gallery = ["img/netflix1.png", "img/netflix2.png", "img/netflix3.png",
+                               "img/netflix4.png", "img/netflix5.png", "img/netflix6.png",
+                               "img/netflix6.png", "img/netflix7.png", "img/netflix8.png"];
+        }
+        planObj.position.x = xp;
+        planObj.position.z = zp;
+        planObj.rotation.y = i * incrementAngle * mpi;
+        startRadians += incrementRadians;
+        parent[i%3].add(planObj);
     }
 
     renderer = new THREE.CanvasRenderer();
@@ -134,14 +140,16 @@ function leapMain() {
                     }
                     if (frameCount % 500 == 1) {
                         console.log("bang! " + best_i + " " + best_j + " " + parent[best_i].children[best_j].name);
-                        $.fancybox.open([
+                        var l = [
                             {
                                 href : parent[best_i].children[best_j].name,
-                                title : '--insert title--'
+                                title : parent[best_i].children[best_j].title
                             }
-                        ], {
-                            padding : 0
-                        });
+                        ];
+                        var gallery = parent[best_i].children[best_j].gallery;
+                        for (var x = 0; x < gallery.length; x++)
+                            l.push({href: gallery[x]});
+                        $.fancybox.open(l, {padding : 0});
                     }
                     frameCount += 1;
                 }
