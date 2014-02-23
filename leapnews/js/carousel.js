@@ -75,6 +75,8 @@ function init() {
             planObj.gallery = ["img/netflix1.png", "img/netflix2.png", "img/netflix3.png",
                                "img/netflix4.png", "img/netflix5.png", "img/netflix6.png",
                                "img/netflix6.png", "img/netflix7.png", "img/netflix8.png"];
+        } else {
+            planObj.gallery = [];
         }
         planObj.position.x = xp;
         planObj.position.z = zp;
@@ -115,11 +117,25 @@ function render() {
 }
 
 function leapMain() {
-    var frameCount = 0;
-    var controller = new Leap.Controller();
+    var frameCount = 3;
+    var controller = new Leap.Controller({enableGestures: true});
     var x_threshold = 30, y_threshold = 100;
+    var in_gallery = false;
     controller.on('frame', function(frameInstance) {
-        if (frameInstance.hands.length > 0) {
+        if (in_gallery) {
+            for (var i = 0; i < frameInstance.gestures.length; i++) {
+                if (frameInstance.gestures[i].type == "swipe") {
+                    $.fancybox.close();
+                    in_gallery = false;
+                    break;
+                } else if (frameInstance.gestures[i].type == "circle" && frameInstance.gestures[i].state == "stop") {
+                    if (frameInstance.gestures[i].normal[2] <= 0)
+                        $.fancybox.next();
+                    else
+                        $.fancybox.prev();
+                }
+            }
+        } else if (frameInstance.hands.length > 0) {
             for (var i = 0; i < frameInstance.hands.length; i++) {
                 if (frameInstance.hands[i].pointables.length == 1) {
 
@@ -135,10 +151,10 @@ function leapMain() {
                             min_distance = d;
                             best_j = j;
                         }
-                        if (frameCount % 500 == 1)
+                        if (frameCount % 250 == 1)
                             console.log(parent[best_i].rotation.y + " -- " + j + " -- " + images[j].rotation.y + " -- " + images[j].name);
                     }
-                    if (frameCount % 500 == 1) {
+                    if (frameCount % 250 == 1) {
                         console.log("bang! " + best_i + " " + best_j + " " + parent[best_i].children[best_j].name);
                         var l = [
                             {
@@ -149,6 +165,7 @@ function leapMain() {
                         var gallery = parent[best_i].children[best_j].gallery;
                         for (var x = 0; x < gallery.length; x++)
                             l.push({href: gallery[x]});
+                        in_gallery = true;
                         $.fancybox.open(l, {padding : 0});
                     }
                     frameCount += 1;
