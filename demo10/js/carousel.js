@@ -213,16 +213,17 @@ function leapMain() {
     controller.on('frame', function(frameInstance) {
         if (frameInstance.hands.length > 0) {
             for (var i = 0; i < frameInstance.hands.length; i++) {
+                // X-axis - left/right
                 var x_direction = frameInstance.hands[i].palmPosition[0];
-                // console.log("Hand[" + i + "]" + frameInstance.hands[i].palmVelocity[1]);
                 var percentage = Math.abs(x_direction)/150;
-                if (x_direction > x_threshold) { // to right
+                if (x_direction > x_threshold) {
                     targetRotation += 0.02 * percentage;
-                } else if (x_direction < -x_threshold) { // to left
+                } else if (x_direction < -x_threshold) {
                     targetRotation -= 0.02 * percentage;
                 }
                 camera.position.x =  Math.sin( theta * Math.PI / 360 ) * Math.cos( phi * Math.PI / 360 );
 
+                // Y-axis - up/down
                 var y_direction = (frameInstance.hands[i].palmPosition[1]-140);
                 if (y_direction < y_threshold) {
                     camera.position.y -= y_direction/150;
@@ -233,6 +234,11 @@ function leapMain() {
                     camera.position.y = Math.max(120, camera.position.y);
                     camera.position.y = Math.min(320, camera.position.y);
                 }
+
+                // Z-axis - zoom
+                camera.fov *= (1 + frameInstance.hands[i].palmPosition[2]/50000);
+                camera.updateProjectionMatrix();
+
                 render();
             }
         }
