@@ -16,8 +16,6 @@ var windowHalfX = window.innerWidth / 2;
 var windowHalfY = window.innerHeight / 2;
 var radious = 1600, theta = 45, onMouseDownTheta = 45, phi = 60;
 var onMouseDownPhi = 60, isShiftDown = false;
-var particle;
-var particles = [];
 
 function init() {
     container = document.createElement('div');
@@ -77,7 +75,6 @@ function init() {
     var camSize = 100;
     var startAngle = 0;
     var circleRadius = 230;
-    var diameter = circleRadius * 4;
     var centerX = -5;
     var centerZ = 0.5; // -2.5
 
@@ -102,7 +99,6 @@ function init() {
           planObj.position.z = zp;
           planObj.rotation.y = i*incrementAngle * (Math.PI/180.0); //MH - do this without degrees
           startRadians += incrementRadians;
-          particles.push(planObj);
           parent.add(planObj);
     }
 
@@ -125,10 +121,6 @@ function init() {
 
 //////////////////////////////////////////////////////////////////////
 //  Mouse events
-//////////////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////////////////////
-//  onDocumentMouseWheel
 //////////////////////////////////////////////////////////////////////
 
 function onDocumentMouseWheel( event ) {
