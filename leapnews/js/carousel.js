@@ -74,7 +74,7 @@ function init() {
             planObj.title = "Netflix, Comcast reach peering agreement - GigaOm report";
             planObj.gallery = ["img/netflix1.png", "img/netflix2.png", "img/netflix3.png",
                                "img/netflix4.png", "img/netflix5.png", "img/netflix6.png",
-                               "img/netflix6.png", "img/netflix7.png", "img/netflix8.png"];
+                               "img/netflix7.png", "img/netflix8.png"];
         } else {
             planObj.gallery = [];
         }
