@@ -119,8 +119,9 @@ function render() {
 function leapMain() {
     var frameCount = 3;
     var controller = new Leap.Controller({enableGestures: true});
-    var x_threshold = 30, y_threshold = 100;
+    var x_threshold = 30, y_threshold = 60;
     var in_gallery = false;
+    var arrow = false;
     controller.on('frame', function(frameInstance) {
         if (in_gallery) {
             for (var i = 0; i < frameInstance.gestures.length; i++) {
@@ -185,15 +186,41 @@ function leapMain() {
                 }
 
                 // Y-axis - up/down
-                var y_direction = (frameInstance.hands[i].palmPosition[1]-140);
-                if (y_direction < y_threshold) {
+                var origin = false, terminus = false;
+                var y_direction = (frameInstance.hands[i].palmPosition[1]-175);
+                var ARROW_SIZE = 100;
+                var ARROW_X_OFFSET = 375;
+                if (y_direction < -y_threshold) {
                     camera.position.y -= y_direction/150;
                     camera.position.y = Math.max(120, camera.position.y);
                     camera.position.y = Math.min(320, camera.position.y);
+
+                    origin = new THREE.Vector3(camera.position.x - ARROW_X_OFFSET,
+                                               camera.position.y,
+                                               0);
+                    terminus = new THREE.Vector3(camera.position.x - ARROW_X_OFFSET,
+                                                 camera.position.y - ARROW_SIZE,
+                                                 0);
                 } else if (y_direction > y_threshold) {
                     camera.position.y -= y_direction/150;
                     camera.position.y = Math.max(120, camera.position.y);
                     camera.position.y = Math.min(320, camera.position.y);
+
+                    origin = new THREE.Vector3(camera.position.x - ARROW_X_OFFSET,
+                                               camera.position.y,
+                                               0);
+                    terminus = new THREE.Vector3(camera.position.x - ARROW_X_OFFSET,
+                                                 camera.position.y + ARROW_SIZE,
+                                                 0);
+                }
+
+                // adding arrow
+                if (arrow)
+                    scene.remove(arrow);
+                if (origin && terminus) {
+                    var direction = new THREE.Vector3().subVectors(terminus, origin).normalize();
+                    arrow = new THREE.ArrowHelper(direction, origin, ARROW_SIZE, 0xaa0000, 20, 20);
+                    scene.add(arrow);
                 }
 
                 // Z-axis - zoom
