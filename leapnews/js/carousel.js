@@ -9,6 +9,21 @@ var windowHalfX = window.innerWidth / 2;
 var windowHalfY = window.innerHeight / 2;
 var theta = 45, phi = 60;
 
+var y_arrow = false, x_arrow = false;
+var lastFrameTime = 0;
+var counter = 0, counter_max = 10;
+function clearArrowIfNoRecentMovement() {
+    // 3 frames, zero out the arrow
+    if ((Date.now() - lastFrameTime) > 30) {
+        if (y_arrow)
+            scene.remove(y_arrow);
+        if (x_arrow)
+            scene.remove(x_arrow);
+        render();
+    }
+}
+setInterval(clearArrowIfNoRecentMovement,17); // 60 fps = 17 ms
+
 function init() {
     container = document.createElement('div');
     document.body.appendChild(container);
@@ -126,8 +141,8 @@ function leapMain() {
     var controller = new Leap.Controller({enableGestures: true});
     var x_threshold = 30, y_threshold = 60;
     var in_gallery = false;
-    var y_arrow = false, x_arrow = false;
     controller.on('frame', function(frameInstance) {
+        lastFrameTime = Date.now();
         if (in_gallery) {
             for (var i = 0; i < frameInstance.gestures.length; i++) {
                 if (frameInstance.gestures[i].type == "swipe") {
