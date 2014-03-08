@@ -24,6 +24,38 @@ function clearArrowIfNoRecentMovement() {
 }
 setInterval(clearArrowIfNoRecentMovement,17); // 60 fps = 17 ms
 
+function split_text(text, words)
+{
+    var split = text.split(" ");
+    var i = 0;
+    var length = split.length;
+    var word_count = 0;
+    var cur_page = 0;
+    var pages = Array();
+    pages[0] = Array();
+    pages[0] += "<p class='page'>";
+    while(i < length)
+    {
+        if(word_count < words)
+        {
+            pages[cur_page] += split[i] + " ";
+            word_count++;
+        }
+        else
+        {
+            pages[cur_page] += "</p>";
+            cur_page++;
+            pages[cur_page] = Array();
+            pages[cur_page] += "<p class='page'>";
+            word_count = 0;
+        }
+        split[i];
+        i++;
+    }
+    return pages;
+}
+
+
 function init() {
     container = document.createElement('div');
     document.body.appendChild(container);
@@ -45,23 +77,15 @@ function init() {
     ////////////////////////////////////////////////////////////////////////
     // Generate 3D Planes in Radius circle
     ////////////////////////////////////////////////////////////////////////
-    var arImgRotator = {
-        "0": "0342f0984c40b47f86b077ed304b.jpg",
-        "1": "04432755468e82b71776d68c38ce.jpg",
-        "2": "1643c2644bebb198f4469725c095.jpg",
-        "3": "17e2599d4a38a5a39345112fe906.jpg",
-        "4": "1ce8af5e40bdaffce28d41085e0f.jpg",
-        "5": "240b025d4fdb91cb486440b95008.jpg",
-        "6": "50ec75624b16be2b7396e397a105.jpg",
-        "7": "5a9ee59c48d6992a13ba8f380202.jpg",
-        "8": "6a39fe1a4b06850414edbec28f34.jpg",
-        "9": "912b446a4e94a2643895f73d80a3.jpg",
-        "10": "a5855dcb4a33a78cc8b49dfcdbd7.jpg",
-        "11": "dcb19d924a1eb644cc7b03637802.jpg",
-        "12": "dd1d81eb464a9e7e9eb102674cf0.jpg",
-        "13": "dec7ee9f473bb0423eebf38bd279.jpg",
-        "14": "eb74f23941f2b39acd8b9322cee9.jpg"
-    };
+var data = Object();
+
+data[0] = Object();
+data[0].type = "article"; 
+data[0].url = "http://www.washingtonpost.com/blogs/the-switch/wp/2014/03/07/snowden-i-raised-nsa-concerns-internally-over-10-times-before-going-rogue/";
+data[0].image_url = "http://www.washingtonpost.com/rf/image_606w/2010-2019/WashingtonPost/2013/06/23/Production/Daily/A-Section/Images/NSA_Surveillance_Snowden.JPEG-0ee14.jpg";
+data[0].text = "Former National Security Agency contractor Edward Snowden said he repeatedly tried to go through official channels to raise concerns about government snooping programs but that his warnings fell on the deaf ears. In testimony to the European Parliament released Friday morning, Snowden wrote that he reported policy or legal issues related to spying programs to more than 10 officials, but as a contractor he had no legal avenue to pursue further whistleblowing. Asked specifically if he felt like he had exhausted all other avenues before deciding to leak classified information to the public, Snowden responded: Yes. I had reported these clearly problematic programs to more than ten distinct officials, none of whom took any action to address them. As an employee of a private company rather than a direct employee of the US government, I was not protected by US whistleblower laws, and I would not have been protected from retaliation and legal sanction for revealing classified information about lawbreaking in accordance with the recommended process. Snowden worked for the CIA before becoming an NSA contractor for various companies. He was working for Booz Allen Hamilton at an NSA facility in Hawaii at the time he leaked information about government programs to the press. In an August news conference, President Obama said there were 'other avenues' available to someone like Snowden 'whose conscience was stirred and thought that they needed to question government actions.'' Obama pointed to Presidential Policy Directive 19 -- which set up a system for questioning classified government actions under the Office of the Director of National Intelligence. However, as a contractor rather than an government employee or officer, Snowden was outside the protection of this system. 'The result,' Snowden said, 'was that individuals like me were left with no proper channels.' Elsewhere in his testimony, Snowden described the reaction he received when relating his concerns to co-workers and superiors. The responses, he said, fell into two camps. 'The first were well-meaning but hushed warnings not to 'rock the boat,' for fear of the sort of retaliation that befell former NSA whistleblowers like Wiebe, Binney, and Drake.' All three of those men, he notes, were subject to intense scrutiny and the threat of criminal prosecution. 'Everyone in the Intelligence Community is aware of what happens to people who report concerns about unlawful but authorized operations,' he said. The other responses, Snowden said, were similar: suggestions that he 'let the issue be someone else's problem.' Even the highest-ranking officials he told about his concerns could not recall when an official complaint resulted in the shutdown of an unlawful program, he testified, 'but there was a unanimous desire to avoid being associated with such a complaint in any form.' Snowden has claimed that he brought up issues with what he considers unlawful government programs before. The NSA disputes his account, previously telling The Washington Post that, 'after extensive investigation, including interviews with his former NSA supervisors and co-workers, we have not found any evidence to support Mr. Snowden’s contention that he brought these matters to anyone’s attention.' Both Obama and his national security adviser, Susan E. Rice, have said that Snowden should return to the United States and face criminal sanctions for his actions. Snowden was charged with three felonies over the summer and has been living in Russia since fleeing the United States in the wake of the leaks.";
+data[0].description = "Snowden: I raised NSA concerns internally over 10 times before going rogue";
+data[0].tags = "NSA, Security, Surveillance, Snowden"
 
     var camSize = 100;
     var startAngle = 0;
@@ -79,20 +103,15 @@ function init() {
         var planObj = new THREE.Mesh(
             new THREE.PlaneGeometry(camSize, 0.95*camSize),
             new THREE.MeshBasicMaterial({
-                map: THREE.ImageUtils.loadTexture('img/' + arImgRotator[i]),
+                map: THREE.ImageUtils.loadTexture(data[0].image_url),
                 doubleSided: false,
                 wireframe: false,
                 overdraw: true
             }));
-        planObj.name = 'img/' + arImgRotator[i];
-        if (i == 10) {
-            planObj.title = "Netflix, Comcast reach peering agreement - GigaOm report";
-            planObj.gallery = ["img/netflix1.png", "img/netflix2.png", "img/netflix3.png",
-                               "img/netflix4.png", "img/netflix5.png", "img/netflix6.png",
-                               "img/netflix7.png", "img/netflix8.png"];
-        } else {
-            planObj.gallery = [];
-        }
+        planObj.name = data[0].image_url
+        planObj.title = data[0].description
+        planObj.gallery = split_text(data[0].text, 50)
+
         planObj.position.x = xp;
         planObj.position.z = zp;
         planObj.rotation.y = i * incrementAngle * mpi;
@@ -180,12 +199,12 @@ function leapMain() {
                         var l = [
                             {
                                 href : parent[best_i].children[best_j].name,
-                                title : parent[best_i].children[best_j].title
+                                title : parent[best_i].children[best_j].title,
                             }
                         ];
                         var gallery = parent[best_i].children[best_j].gallery;
                         for (var x = 0; x < gallery.length; x++)
-                            l.push({href: gallery[x]});
+                            l.push({content: gallery[x]});
                         in_gallery = true;
                         $.fancybox.open(l, {padding : 0});
                     }
