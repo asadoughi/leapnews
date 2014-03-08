@@ -89,6 +89,11 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColorHex(0xF8F8F8, 0.9);
     container.appendChild(renderer.domElement);
+
+    container_tag_cloud = document.createElement('div');
+    container.appendChild(container_tag_cloud);
+    container_tag_cloud.innerHTML = "[This is where the tag cloud goes]";
+    container_tag_cloud.setAttribute("style", "top:50%;left:80%;z-index:10;position:absolute");
 }
 
 
