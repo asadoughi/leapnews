@@ -1,0 +1,29 @@
+/*<div id='tags_container'>
+<ul id='tags'>
+<li class='tag'>
+
+</li>
+</ul>
+</div>
+*/
+
+#tags_container
+{
+	width: 250px;
+}
+
+#tags_container #tags
+{
+
+}
+
+#tags_container #tags .tag
+{
+	list-style: none;
+	float: left;
+	margin-right: 10px;
+	margin-bottom: 5px;
+	background-color: #97C4E8;
+	font-size: 115%;
+}
+
