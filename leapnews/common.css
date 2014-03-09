@@ -27,3 +27,7 @@
 	font-size: 115%;
 }
 
+p.page
+{
+    width: 500px;
+}

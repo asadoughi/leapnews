@@ -145,7 +145,7 @@ data[2].tags = "NSA,Obama,Surveillance,Data,Security,Rights";
             }));
         planObj.name = data[f%3].image_url
         planObj.title = data[f%3].description
-        planObj.gallery = split_text(data[f%3].text, 200)
+        planObj.gallery = split_text(data[f%3].text, 50)
         planObj.tags = render_tags(data[f%3].tags);
 
         planObj.position.x = xp;
