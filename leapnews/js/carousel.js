@@ -8,6 +8,8 @@ var targetRotation = 0;
 var windowHalfX = window.innerWidth / 2;
 var windowHalfY = window.innerHeight / 2;
 var theta = 45, phi = 60;
+var container_tag_cloud = document.createElement('div');
+
 
 var y_arrow = false, x_arrow = false;
 var lastFrameTime = 0;
@@ -23,6 +25,22 @@ function clearArrowIfNoRecentMovement() {
     }
 }
 setInterval(clearArrowIfNoRecentMovement,17); // 60 fps = 17 ms
+
+function get_best_j() {
+    var min_distance = Infinity;
+    var best_i = visible_row(), best_j = 0;
+    var images = parent[best_i].children;
+    for (var j = 0; j < images.length; j++) {
+        var d = Math.abs((2 * Math.PI - parent[best_i].rotation.y % (2 * Math.PI)) - images[j].rotation.y);
+        if (parent[best_i].rotation.y < 0)
+            d = Math.abs((Math.abs(parent[best_i].rotation.y) % (2 * Math.PI)) - images[j].rotation.y);
+        if (d < min_distance) {
+            min_distance = d;
+            best_j = j;
+        }
+    }
+    return best_j;
+}
 
 function split_text(text, words)
 {
@@ -80,7 +98,7 @@ function init() {
 var data = Object();
 
 data[0] = Object();
-data[0].type = "article"; 
+data[0].type = "article";
 data[0].url = "http://www.washingtonpost.com/blogs/the-switch/wp/2014/03/07/snowden-i-raised-nsa-concerns-internally-over-10-times-before-going-rogue/";
 data[0].image_url = "http://www.washingtonpost.com/rf/image_606w/2010-2019/WashingtonPost/2013/06/23/Production/Daily/A-Section/Images/NSA_Surveillance_Snowden.JPEG-0ee14.jpg";
 data[0].text = "Former National Security Agency contractor Edward Snowden said he repeatedly tried to go through official channels to raise concerns about government snooping programs but that his warnings fell on the deaf ears. In testimony to the European Parliament released Friday morning, Snowden wrote that he reported policy or legal issues related to spying programs to more than 10 officials, but as a contractor he had no legal avenue to pursue further whistleblowing. Asked specifically if he felt like he had exhausted all other avenues before deciding to leak classified information to the public, Snowden responded: Yes. I had reported these clearly problematic programs to more than ten distinct officials, none of whom took any action to address them. As an employee of a private company rather than a direct employee of the US government, I was not protected by US whistleblower laws, and I would not have been protected from retaliation and legal sanction for revealing classified information about lawbreaking in accordance with the recommended process. Snowden worked for the CIA before becoming an NSA contractor for various companies. He was working for Booz Allen Hamilton at an NSA facility in Hawaii at the time he leaked information about government programs to the press. In an August news conference, President Obama said there were 'other avenues' available to someone like Snowden 'whose conscience was stirred and thought that they needed to question government actions.'' Obama pointed to Presidential Policy Directive 19 -- which set up a system for questioning classified government actions under the Office of the Director of National Intelligence. However, as a contractor rather than an government employee or officer, Snowden was outside the protection of this system. 'The result,' Snowden said, 'was that individuals like me were left with no proper channels.' Elsewhere in his testimony, Snowden described the reaction he received when relating his concerns to co-workers and superiors. The responses, he said, fell into two camps. 'The first were well-meaning but hushed warnings not to 'rock the boat,' for fear of the sort of retaliation that befell former NSA whistleblowers like Wiebe, Binney, and Drake.' All three of those men, he notes, were subject to intense scrutiny and the threat of criminal prosecution. 'Everyone in the Intelligence Community is aware of what happens to people who report concerns about unlawful but authorized operations,' he said. The other responses, Snowden said, were similar: suggestions that he 'let the issue be someone else's problem.' Even the highest-ranking officials he told about his concerns could not recall when an official complaint resulted in the shutdown of an unlawful program, he testified, 'but there was a unanimous desire to avoid being associated with such a complaint in any form.' Snowden has claimed that he brought up issues with what he considers unlawful government programs before. The NSA disputes his account, previously telling The Washington Post that, 'after extensive investigation, including interviews with his former NSA supervisors and co-workers, we have not found any evidence to support Mr. Snowden’s contention that he brought these matters to anyone’s attention.' Both Obama and his national security adviser, Susan E. Rice, have said that Snowden should return to the United States and face criminal sanctions for his actions. Snowden was charged with three felonies over the summer and has been living in Russia since fleeing the United States in the wake of the leaks.";
@@ -110,7 +128,8 @@ data[0].tags = "NSA, Security, Surveillance, Snowden"
             }));
         planObj.name = data[0].image_url
         planObj.title = data[0].description
-        planObj.gallery = split_text(data[0].text, 50)
+        planObj.gallery = split_text(data[0].text, 200)
+        planObj.tags = render_tags(data[0].tags);
 
         planObj.position.x = xp;
         planObj.position.z = zp;
@@ -124,11 +143,29 @@ data[0].tags = "NSA, Security, Surveillance, Snowden"
     renderer.setClearColorHex(0xF8F8F8, 0.9);
     container.appendChild(renderer.domElement);
 
-    container_tag_cloud = document.createElement('div');
     container.appendChild(container_tag_cloud);
-    container_tag_cloud.innerHTML = "[This is where the tag cloud goes]";
     container_tag_cloud.setAttribute("style", "top:50%;left:80%;z-index:10;position:absolute");
 }
+
+function render_tags(tags)
+{
+    var split = tags.split(",");
+    var i = 0;
+    var length = split.length;
+    var html = Array();
+    html += "<div id='tags_container'>";
+    html += "<ul id='tags'>";
+    while(i < length)
+    {
+
+        html += "<li class='tag'>" + split[i] + "</li>";
+        i++;
+    }
+    html += "</div>";
+    html += "</ul>";
+    return html;
+}
+
 
 
 function animate() {
@@ -149,9 +186,22 @@ function visible_row() {
     return distance_i;
 }
 
+var last_best_i = false, last_best_j = false;
 function render() {
     distance_i = visible_row();
     parent[distance_i].rotation.y += (targetRotation - parent[distance_i].rotation.y) * 0.05;
+
+    var best_i = visible_row();
+    var best_j = get_best_j();
+    if (last_best_i && last_best_j) {
+        if (last_best_i != best_i || last_best_j != best_j)
+            container_tag_cloud.innerHTML = parent[best_i].children[best_j].tags;
+    } else {
+        container_tag_cloud.innerHTML = parent[best_i].children[best_j].tags;
+    }
+    last_best_i = best_i;
+    last_best_j = best_j;
+
     renderer.render(scene, camera);
 }
 
